@@ -1,0 +1,32 @@
+************************************************************************
+*                                                                      *
+* Denne fila var opprinnelig en del av en eksport av data fra Norsk    * 
+* ordbank. Den er redigert fra originalen av Norsk scrabbleforbund.    *
+*                                                                      *
+* Norsk ordbank er en database over norske ord, utviklet og            *
+* vedlikeholdt av Institutt for lingvistiske og nordiske studier       *
+* ved Universitetet i Oslo og Språkrådet.                              *
+*                                                                      *
+* Ordbanken kan kontaktes på e-post: ordbanken@iln.uio.no              *
+*                                                                      *
+* Norsk scrabbleforbund er en frivillig organisasjon som jobber for å  *
+* fremme interessen for Scrabble og lignende spill i Norge.            *
+*                                                                      *
+* Norsk scrabbleforbund kan kontaktes på e-post:                       * 
+* styret@scrabbleforbundet.no                                          *
+*                                                                      *
+* Innholdet i databasen og i denne eksporten er underlagt normale      *
+* opphavsrettslige begrensninger.                                      *
+* Dataene kan fritt brukes, distribueres og endres i henhold til       *
+* innholdet i GNU General Public License, publisert av the Free        *
+* Software Foundation, versjon 3 eller nyere.                          *
+*                                                                      *
+* Dataene er distribuert i håp om at de vil være til nytte, men uten   *
+* noen form for garanti.                                               *
+*                                                                      *
+* Sammen med disse dataene skal du ha mottatt en kopi av GNU General   *
+* Public License. Har du ikke det, skriv til The Free Software         *
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,           *
+* MA 02110-1301 USA.                                                   *
+*                                                                      *
+************************************************************************

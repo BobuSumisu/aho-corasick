@@ -6,6 +6,16 @@ Implementation of the Aho-Corasick string-search algorithm in Go.
 
 Licensed under MIT License.
 
+## Details
+
+This implementation does not use a [Double-Array Trie](https://linux.thai.net/~thep/datrie/datrie.html) as in my
+[implementation](https://github.com/BobuSumisu/go-ahocorasick) from a couple of years back.
+
+This reduces the build time drastically, but at the cost of higher memory consumption.
+
+The search time is still fast, and comparable to other Go implementations I have found on github that claims to be fast
+(see [performance](#Performance)).
+
 ## Documentation
 
 Can be found at [godoc.org](https://godoc.org/github.com/BobuSumisu/aho-corasick).
@@ -51,27 +61,8 @@ builder.LoadPatterns("patterns.txt")
 builder.LoadStrings("strings.txt")
 ```
 
-`LoadPatterns` expects patterns as hexadecimal strings, and both functions expects one
-pattern per line.
-
-## Saving and Loading
-
-A `Trie` can be saved to file and loaded, to avoid having to build a trie multiple times:
-
-```go
-if err := trie.Save("my.trie"); err != nil {
-    log.Fatal(err)
-}
-```
-
-Loading it:
-
-```go
-trie, err := LoadTrie("my.trie")
-if err != nil {
-    log.Fatal(err)
-}
-```
+Both functions expects a text file with one pattern per line. `LoadPatterns` expects the pattern to
+be in hexadecimal form.
 
 ## Performance
 
@@ -98,6 +89,19 @@ Build and search time grows quite linearly with regards to number of patterns an
 Inspired by [anknown](https://github.com/anknown/ahocorasick) I also wanted to check how my implementation compared
 to other Aho-Corasick implementations in Go.
 
-I created a simple [benchmark](./benchmark/main.go) and ran it on my laptop.
+I created a simple [benchmark](./benchmark/main.go) and ran it on my laptop. With 512,000 patterns, my implementation
+has comparable build time and faster search time than the other implementations:
 
-![benchmark plot](./benchmark/benchmark.png)
+    anknown         512000     932.57ms    10.81ms      94000
+    bobusumisu      512000     631.77ms     7.20ms      94000
+    cloudflare      512000    4879.41ms     2.77ms       4490
+    iohub           512000     393.96ms    14.19ms      91986
+
+[cloudflare](https://github.com/cloudflare/ahocorasick) is implemented a bit differently though. It doesn't output
+position of matches but returns indices into the original patterns array.
+
+### Memory Usage
+
+As mentioned, the memory consumption will be quite high compared to a double-array trie
+implementation. Especially during the build phase (which currently contains a lot of object
+allocations).

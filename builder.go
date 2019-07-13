@@ -1,4 +1,11 @@
-package aho_corasick
+package ahocorasick
+
+import (
+	"bufio"
+	"encoding/hex"
+	"os"
+	"strings"
+)
 
 type state struct {
 	id       int
@@ -19,11 +26,13 @@ func newState(id int, value byte, parent *state) *state {
 	}
 }
 
+// TrieBuilder is used to build Tries.
 type TrieBuilder struct {
 	states []*state
 	root   *state
 }
 
+// NewTrieBuilder creates and initializes a new TrieBuilder.
 func NewTrieBuilder() *TrieBuilder {
 	tb := &TrieBuilder{
 		states: make([]*state, 0),
@@ -40,6 +49,7 @@ func (tb *TrieBuilder) addState(value byte, parent *state) *state {
 	return s
 }
 
+// AddPattern adds a byte pattern to the Trie under construction.
 func (tb *TrieBuilder) AddPattern(pattern []byte) *TrieBuilder {
 	s := tb.root
 	var t *state
@@ -58,6 +68,7 @@ func (tb *TrieBuilder) AddPattern(pattern []byte) *TrieBuilder {
 	return tb
 }
 
+// AddPatterns adds multiple byte patterns to the Trie.
 func (tb *TrieBuilder) AddPatterns(patterns [][]byte) *TrieBuilder {
 	for _, pattern := range patterns {
 		tb.AddPattern(pattern)
@@ -65,10 +76,12 @@ func (tb *TrieBuilder) AddPatterns(patterns [][]byte) *TrieBuilder {
 	return tb
 }
 
+// AddString adds a string pattern to the Trie under construction.
 func (tb *TrieBuilder) AddString(pattern string) *TrieBuilder {
 	return tb.AddPattern([]byte(pattern))
 }
 
+// AddStrings add multiple strings to the Trie.
 func (tb *TrieBuilder) AddStrings(patterns []string) *TrieBuilder {
 	for _, pattern := range patterns {
 		tb.AddString(pattern)
@@ -76,6 +89,51 @@ func (tb *TrieBuilder) AddStrings(patterns []string) *TrieBuilder {
 	return tb
 }
 
+// LoadPatterns loads byte patterns from a file. Expects one pattern per line in hexadecimal form.
+func (tb *TrieBuilder) LoadPatterns(path string) error {
+	f, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	s := bufio.NewScanner(f)
+
+	for s.Scan() {
+		str := strings.TrimSpace(s.Text())
+		if len(str) != 0 {
+			pattern, err := hex.DecodeString(str)
+			if err != nil {
+				return err
+			}
+			tb.AddPattern(pattern)
+		}
+	}
+
+	return s.Err()
+}
+
+// LoadStrings loads string patterns from a file. Expects one pattern per line.
+func (tb *TrieBuilder) LoadStrings(path string) error {
+	f, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	s := bufio.NewScanner(f)
+
+	for s.Scan() {
+		str := strings.TrimSpace(s.Text())
+		if len(str) != 0 {
+			tb.AddString(str)
+		}
+	}
+
+	return s.Err()
+}
+
+// Build constructs the Trie.
 func (tb *TrieBuilder) Build() *Trie {
 	tb.computeFailLinks(tb.root)
 	tb.computeDictLinks(tb.root)

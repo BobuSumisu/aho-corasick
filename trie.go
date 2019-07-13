@@ -1,10 +1,11 @@
-package aho_corasick
+package ahocorasick
 
 const (
 	rootState int = 1
 	nilState  int = 0
 )
 
+// Trie represents a trie of patterns with extra links as per the Aho-Corasick algorithm.
 type Trie struct {
 	failLink []int
 	dictLink []int
@@ -52,6 +53,7 @@ func (tr *Trie) walk(input []byte, fn walkFn) {
 	}
 }
 
+// Match runs the Aho-Corasick string-search algorithm on a byte input.
 func (tr *Trie) Match(input []byte) []*Match {
 	matches := make([]*Match, 0)
 	tr.walk(input, func(end, n int) bool {
@@ -62,6 +64,7 @@ func (tr *Trie) Match(input []byte) []*Match {
 	return matches
 }
 
+// MatchFirst is the same as Match, but returns after first successful match.
 func (tr *Trie) MatchFirst(input []byte) *Match {
 	var match *Match
 	tr.walk(input, func(end, n int) bool {
@@ -72,10 +75,12 @@ func (tr *Trie) MatchFirst(input []byte) *Match {
 	return match
 }
 
+// MatchString runs the Aho-Corasick string-search algorithm on a string input.
 func (tr *Trie) MatchString(input string) []*Match {
 	return tr.Match([]byte(input))
 }
 
+// MatchFirstString is the same as MatchString, but returns after first successful match.
 func (tr *Trie) MatchFirstString(input string) *Match {
 	return tr.MatchFirst([]byte(input))
 }

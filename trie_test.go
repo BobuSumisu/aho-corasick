@@ -1,4 +1,4 @@
-package aho_corasick
+package ahocorasick
 
 import (
 	"bufio"
@@ -8,6 +8,26 @@ import (
 	"strings"
 	"testing"
 )
+
+func TestReadme(t *testing.T) {
+	trie := NewTrieBuilder().AddStrings([]string{"or", "amet"}).Build()
+	matches := trie.MatchString("Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
+	expected := []*Match{
+		newMatchString(1, "or"),
+		newMatchString(15, "or"),
+		newMatchString(22, "amet"),
+	}
+
+	if len(expected) != len(matches) {
+		t.Errorf("expected %d matches, got %d\n", len(expected), len(matches))
+	}
+
+	for i := range matches {
+		if !MatchEqual(expected[i], matches[i]) {
+			t.Errorf("expected %v, got %v\n", expected[i], matches[i])
+		}
+	}
+}
 
 func TestTrie(t *testing.T) {
 	cases := []struct {

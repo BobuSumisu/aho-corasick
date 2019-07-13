@@ -1,61 +1,50 @@
 package aho_corasick
 
-type trieNode struct {
-	parent      *trieNode
-	fail        *trieNode
-	dict        *trieNode
-	c           byte
-	patternLen  int
-	transitions [256]*trieNode
-}
-
-func newTrieNode(parent *trieNode, c byte) *trieNode {
-	return &trieNode{
-		parent:     parent,
-		fail:       nil,
-		dict:       nil,
-		c:          c,
-		patternLen: 0,
-	}
-}
+const (
+	rootState int = 1
+	nilState  int = 0
+)
 
 type Trie struct {
-	root *trieNode
+	failLink []int
+	dictLink []int
+	dict     []int
+	trans    [][256]int
 }
 
 type walkFn func(end, n int) bool
 
 func (tr *Trie) walk(input []byte, fn walkFn) {
-	node := tr.root
-	var next *trieNode
+	s := rootState
 
 	for i, c := range input {
+		t := nilState
 
-		if next = node.transitions[c]; next == nil {
-			for n := node.fail; n != tr.root; n = n.fail {
-				if next = n.transitions[c]; next != nil {
+		if t = tr.trans[s][c]; t == nilState {
+			for u := tr.failLink[s]; u != rootState; u = tr.failLink[u] {
+				if t = tr.trans[u][c]; t != nilState {
 					break
 				}
 			}
 
-			if next == nil {
-				if next = tr.root.transitions[c]; next == nil {
-					next = tr.root
+			if t == nilState {
+				if t = tr.trans[rootState][c]; t == nilState {
+					t = rootState
 				}
 			}
 		}
 
-		node = next
+		s = t
 
-		if node.patternLen != 0 {
-			if !fn(i, node.patternLen) {
+		if tr.dict[s] != 0 {
+			if !fn(i, tr.dict[s]) {
 				return
 			}
 		}
 
-		if node.dict != nil {
-			for n := node.dict; n != nil; n = n.dict {
-				if !fn(i, n.patternLen) {
+		if tr.dictLink[s] != nilState {
+			for u := tr.dictLink[s]; u != nilState; u = tr.dictLink[u] {
+				if !fn(i, tr.dict[u]) {
 					return
 				}
 			}

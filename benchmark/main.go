@@ -10,9 +10,8 @@ import (
 	"text/tabwriter"
 	"time"
 
-	bs "local/aho-corasick"
-
 	ak "github.com/anknown/ahocorasick"
+	bs "github.com/bobusumisu/aho-corasick"
 	cf "github.com/cloudflare/ahocorasick"
 	ih "github.com/iohub/ahocorasick"
 )

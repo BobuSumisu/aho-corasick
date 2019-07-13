@@ -100,6 +100,8 @@ has comparable build time and faster search time than the other implementations:
 [cloudflare](https://github.com/cloudflare/ahocorasick) is implemented a bit differently though. It doesn't output
 position of matches but returns indices into the original patterns array.
 
+![benchmark plot](./benchmark/benchmark.png)
+
 ### Memory Usage
 
 As mentioned, the memory consumption will be quite high compared to a double-array trie

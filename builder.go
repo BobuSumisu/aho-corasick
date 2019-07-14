@@ -11,19 +11,10 @@ type state struct {
 	id       int
 	value    byte
 	parent   *state
+	trans    map[byte]*state
+	dict     int
 	failLink *state
 	dictLink *state
-	dict     int
-	trans    map[byte]*state
-}
-
-func newState(id int, value byte, parent *state) *state {
-	return &state{
-		id:     id,
-		value:  value,
-		parent: parent,
-		trans:  make(map[byte]*state),
-	}
 }
 
 // TrieBuilder is used to build Tries.
@@ -44,7 +35,15 @@ func NewTrieBuilder() *TrieBuilder {
 }
 
 func (tb *TrieBuilder) addState(value byte, parent *state) *state {
-	s := newState(len(tb.states), value, parent)
+	s := &state{
+		id:       len(tb.states),
+		value:    value,
+		parent:   parent,
+		trans:    make(map[byte]*state),
+		dict:     0,
+		failLink: nil,
+		dictLink: nil,
+	}
 	tb.states = append(tb.states, s)
 	return s
 }
@@ -53,10 +52,10 @@ func (tb *TrieBuilder) addState(value byte, parent *state) *state {
 func (tb *TrieBuilder) AddPattern(pattern []byte) *TrieBuilder {
 	s := tb.root
 	var t *state
-	var found bool
+	var ok bool
 
 	for _, c := range pattern {
-		if t, found = s.trans[c]; !found {
+		if t, ok = s.trans[c]; !ok {
 			t = tb.addState(c, s)
 			s.trans[c] = t
 		}
@@ -64,7 +63,6 @@ func (tb *TrieBuilder) AddPattern(pattern []byte) *TrieBuilder {
 	}
 
 	s.dict = len(pattern)
-
 	return tb
 }
 
@@ -135,39 +133,35 @@ func (tb *TrieBuilder) LoadStrings(path string) error {
 
 // Build constructs the Trie.
 func (tb *TrieBuilder) Build() *Trie {
+
 	tb.computeFailLinks(tb.root)
 	tb.computeDictLinks(tb.root)
 
 	numStates := len(tb.states)
 
-	parent := make([]int, numStates)
-	failLink := make([]int, numStates)
-	dictLink := make([]int, numStates)
 	dict := make([]int, numStates)
 	trans := make([][256]int, numStates)
+	failLink := make([]int, numStates)
+	dictLink := make([]int, numStates)
 
 	for i, s := range tb.states {
-		if i == 0 {
-			continue
-		}
-		if s.parent != nil {
-			parent[i] = s.parent.id
-		}
-		failLink[i] = s.failLink.id
-		if s.dictLink != nil {
-			dictLink[i] = s.dictLink.id
-		}
 		dict[i] = s.dict
 		for c, t := range s.trans {
 			trans[i][c] = t.id
 		}
+		if s.failLink != nil {
+			failLink[i] = s.failLink.id
+		}
+		if s.dictLink != nil {
+			dictLink[i] = s.dictLink.id
+		}
 	}
 
 	return &Trie{
-		failLink: failLink,
-		dictLink: dictLink,
 		dict:     dict,
 		trans:    trans,
+		failLink: failLink,
+		dictLink: dictLink,
 	}
 }
 
@@ -179,25 +173,27 @@ func (tb *TrieBuilder) computeFailLinks(s *state) {
 	if s == tb.root || s.parent == tb.root {
 		s.failLink = tb.root
 	} else {
+		var ok bool
+
 		for t := s.parent.failLink; t != tb.root; t = t.failLink {
 			if t.failLink == nil {
 				tb.computeFailLinks(t)
 			}
 
-			if s.failLink = t.trans[s.value]; s.failLink != nil {
+			if s.failLink, ok = t.trans[s.value]; ok {
 				break
 			}
 		}
 
 		if s.failLink == nil {
-			if s.failLink = tb.root.trans[s.value]; s.failLink == nil {
+			if s.failLink, ok = tb.root.trans[s.value]; !ok {
 				s.failLink = tb.root
 			}
 		}
 	}
 
-	for _, child := range s.trans {
-		tb.computeFailLinks(child)
+	for _, t := range s.trans {
+		tb.computeFailLinks(t)
 	}
 }
 
@@ -211,7 +207,7 @@ func (tb *TrieBuilder) computeDictLinks(s *state) {
 		}
 	}
 
-	for _, child := range s.trans {
-		tb.computeDictLinks(child)
+	for _, t := range s.trans {
+		tb.computeDictLinks(t)
 	}
 }

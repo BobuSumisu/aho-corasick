@@ -7,10 +7,10 @@ const (
 
 // Trie represents a trie of patterns with extra links as per the Aho-Corasick algorithm.
 type Trie struct {
-	failLink []int
-	dictLink []int
 	dict     []int
 	trans    [][256]int
+	failLink []int
+	dictLink []int
 }
 
 type walkFn func(end, n int) bool
@@ -19,9 +19,9 @@ func (tr *Trie) walk(input []byte, fn walkFn) {
 	s := rootState
 
 	for i, c := range input {
-		t := nilState
+		t := tr.trans[s][c]
 
-		if t = tr.trans[s][c]; t == nilState {
+		if t == nilState {
 			for u := tr.failLink[s]; u != rootState; u = tr.failLink[u] {
 				if t = tr.trans[u][c]; t != nilState {
 					break

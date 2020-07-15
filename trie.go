@@ -13,9 +13,12 @@ type Trie struct {
 	dictLink []int
 }
 
-type walkFn func(end, n int) bool
+// Walk calls this function on any match, giving the end position and length of the matched bytes.
+type WalkFn func(end, n int) bool
 
-func (tr *Trie) walk(input []byte, fn walkFn) {
+// Walk runs the algorithm on a given output, calling the supplied callback function on every
+// match. The algorithm will terminate if the callback function returns false.
+func (tr *Trie) Walk(input []byte, fn WalkFn) {
 	s := rootState
 
 	for i, c := range input {
@@ -56,7 +59,7 @@ func (tr *Trie) walk(input []byte, fn walkFn) {
 // Match runs the Aho-Corasick string-search algorithm on a byte input.
 func (tr *Trie) Match(input []byte) []*Match {
 	matches := make([]*Match, 0)
-	tr.walk(input, func(end, n int) bool {
+	tr.Walk(input, func(end, n int) bool {
 		pos := end - n + 1
 		matches = append(matches, &Match{pos: pos, match: input[pos : pos+n]})
 		return true
@@ -67,7 +70,7 @@ func (tr *Trie) Match(input []byte) []*Match {
 // MatchFirst is the same as Match, but returns after first successful match.
 func (tr *Trie) MatchFirst(input []byte) *Match {
 	var match *Match
-	tr.walk(input, func(end, n int) bool {
+	tr.Walk(input, func(end, n int) bool {
 		pos := end - n + 1
 		match = &Match{pos: pos, match: input[pos : pos+n]}
 		return false

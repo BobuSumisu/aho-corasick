@@ -84,23 +84,10 @@ Build and search time grows quite linearly with regards to number of patterns an
     BenchmarkMatchIbsen/10000-12                 30000              0.0436 ms/op
     BenchmarkMatchIbsen/100000-12                 3000              0.4310 ms/op
 
-### Compared to Others
+### Compared to Other Implementation
 
-Inspired by [anknown](https://github.com/anknown/ahocorasick) I also wanted to check how my implementation compared
-to other Aho-Corasick implementations in Go.
-
-I created a simple [benchmark](./benchmark/main.go) and ran it on my laptop. With 512,000 patterns, my implementation
-has comparable build time and faster search time than the other implementations:
-
-    anknown         512000     932.57ms    10.81ms      94000
-    bobusumisu      512000     631.77ms     7.20ms      94000
-    cloudflare      512000    4879.41ms     2.77ms       4490
-    iohub           512000     393.96ms    14.19ms      91986
-
-[cloudflare](https://github.com/cloudflare/ahocorasick) is implemented a bit differently though. It doesn't output
-position of matches but returns indices into the original patterns array.
-
-![benchmark plot](./benchmark/benchmark.png)
+See
+[aho-corasick-benchmark](https://github.com/Bobusumisu/aho-corasick-benchmark).
 
 ### Memory Usage
 

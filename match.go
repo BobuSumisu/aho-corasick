@@ -7,15 +7,15 @@ import (
 
 // Match represents a matched pattern in the input.
 type Match struct {
-	pos   int
+	pos   int64
 	match []byte
 }
 
-func newMatch(pos int, match []byte) *Match {
+func newMatch(pos int64, match []byte) *Match {
 	return &Match{pos: pos, match: match}
 }
 
-func newMatchString(pos int, match string) *Match {
+func newMatchString(pos int64, match string) *Match {
 	return &Match{pos: pos, match: []byte(match)}
 }
 
@@ -24,7 +24,7 @@ func (m *Match) String() string {
 }
 
 // Pos returns the byte position of the match.
-func (m *Match) Pos() int {
+func (m *Match) Pos() int64 {
 	return m.pos
 }
 

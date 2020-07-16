@@ -8,11 +8,11 @@ import (
 )
 
 type state struct {
-	id       int
+	id       int64
 	value    byte
 	parent   *state
 	trans    map[byte]*state
-	dict     int
+	dict     int64
 	failLink *state
 	dictLink *state
 }
@@ -36,7 +36,7 @@ func NewTrieBuilder() *TrieBuilder {
 
 func (tb *TrieBuilder) addState(value byte, parent *state) *state {
 	s := &state{
-		id:       len(tb.states),
+		id:       int64(len(tb.states)),
 		value:    value,
 		parent:   parent,
 		trans:    make(map[byte]*state),
@@ -62,7 +62,7 @@ func (tb *TrieBuilder) AddPattern(pattern []byte) *TrieBuilder {
 		s = t
 	}
 
-	s.dict = len(pattern)
+	s.dict = int64(len(pattern))
 	return tb
 }
 
@@ -139,10 +139,10 @@ func (tb *TrieBuilder) Build() *Trie {
 
 	numStates := len(tb.states)
 
-	dict := make([]int, numStates)
-	trans := make([][256]int, numStates)
-	failLink := make([]int, numStates)
-	dictLink := make([]int, numStates)
+	dict := make([]int64, numStates)
+	trans := make([][256]int64, numStates)
+	failLink := make([]int64, numStates)
+	dictLink := make([]int64, numStates)
 
 	for i, s := range tb.states {
 		dict[i] = s.dict

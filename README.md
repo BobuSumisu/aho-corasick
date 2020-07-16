@@ -66,6 +66,22 @@ builder.LoadStrings("strings.txt")
 Both functions expects a text file with one pattern per line. `LoadPatterns` expects the pattern to
 be in hexadecimal form.
 
+## Storing
+
+Use `Encode` to store a `Trie` in gzip compressed binary format:
+
+```go
+f, err := os.Create("trie.gz")
+err := Encode(f, trie)
+```
+
+And `Decode` to load it from binary format:
+
+```go
+f, err := os.Open("trie.gz")
+trie, err := Decode(f)
+```
+
 ## Performance
 
 Some simple benchmarking on my machine (Intel(R) Core(TM) i7-8750H CPU @ 2.20GHz, 32 GiB RAM).

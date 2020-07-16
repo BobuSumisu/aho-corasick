@@ -36,15 +36,12 @@ func TestEncodingAndDecoding(t *testing.T) {
 	}
 
 	var buf bytes.Buffer
-	enc := NewEncoder(&buf)
 
-	if err := enc.Encode(trie); err != nil {
+	if err := Encode(&buf, trie); err != nil {
 		t.Error(err)
 	}
 
-	dec := NewDecoder(&buf)
-
-	decodedTrie, err := dec.Decode()
+	decodedTrie, err := Decode(&buf)
 	if err != nil {
 		t.Error(err)
 	}
@@ -62,20 +59,24 @@ func TestReadAndWriteTrie(t *testing.T) {
 
 	trie := NewTrieBuilder().AddStrings(patterns[:10000]).Build()
 
+	f, err := os.Create("test.trie")
+	if err != nil {
+		t.Fatal(err)
+	}
 	defer os.Remove("test.trie")
 
-	if err := WriteTrie(trie, "test.trie"); err != nil {
+	if err := Encode(f, trie); err != nil {
 		t.Fatal(err)
 	}
 
-	decodedTrie, err := ReadTrie("test.trie")
+	f.Seek(0, 0)
+
+	decodedTrie, err := Decode(f)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	matches := decodedTrie.MatchString("abasien")
-
-	fmt.Println(matches)
 
 	if len(matches) != 3 {
 		t.Errorf("expected 3 matches, got %d", len(matches))

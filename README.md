@@ -1,6 +1,8 @@
 # Aho-Corasick
 
 [![Build Status](https://travis-ci.com/BobuSumisu/aho-corasick.svg?token=eGRFn5xdQ7p9yby3GVvc&branch=master)](https://travis-ci.com/BobuSumisu/aho-corasick)
+![Go Version](https://img.shields.io/github/go-mod/go-version/BobuSumisu/aho-corasick)
+![Latest Tag](https://img.shields.io/github/v/tag/BobuSumisu/aho-corasick)
 
 Implementation of the Aho-Corasick string-search algorithm in Go.
 

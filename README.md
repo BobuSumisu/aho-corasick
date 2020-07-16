@@ -85,23 +85,24 @@ trie, err := Decode(f)
 
 ## Performance
 
-Some simple benchmarking on my machine (Intel(R) Core(TM) i7-8750H CPU @ 2.20GHz, 32 GiB RAM).
+Some simple benchmarking on my machine (Intel(R) Core(TM) i7-8665U CPU @ 1.90GHz, 32 GiB RAM).
 
 Build and search time grows quite linearly with regards to number of patterns and input text length.
 
 ### Building
 
-    BenchmarkTrieBuild/100-12                    10000              0.1460 ms/op
-    BenchmarkTrieBuild/1000-12                    1000              2.1643 ms/op
-    BenchmarkTrieBuild/10000-12                    100             14.3305 ms/op
-    BenchmarkTrieBuild/100000-12                    10            131.2442 ms/op
+    BenchmarkTrieBuild/100-4                    7886            154786 ns/op
+    BenchmarkTrieBuild/1000-4                    739           1647419 ns/op
+    BenchmarkTrieBuild/10000-4                    91          13331713 ns/op
+    BenchmarkTrieBuild/100000-4                    9         123886615 ns/op
+
 
 ### Searching
 
-    BenchmarkMatchIbsen/100-12                 2000000              0.0006 ms/op
-    BenchmarkMatchIbsen/1000-12                 300000              0.0042 ms/op
-    BenchmarkMatchIbsen/10000-12                 30000              0.0436 ms/op
-    BenchmarkMatchIbsen/100000-12                 3000              0.4310 ms/op
+    BenchmarkMatchIbsen/100-4                1471089               819 ns/op
+    BenchmarkMatchIbsen/1000-4                202288              5667 ns/op
+    BenchmarkMatchIbsen/10000-4                19957             59680 ns/op
+    BenchmarkMatchIbsen/100000-4                2012            595086 ns/op
 
 ### Compared to Other Implementation
 

@@ -45,12 +45,13 @@ What did we match?
 
 ```go
 for _, match := range matches {
-    fmt.Printf("Matched %q at position %d.\n", match.Match(), match.Pos())
+    fmt.Printf("Matched pattern %d %q at position %d.\n", match.Match(),
+        match.Pattern(), match.Pos())
 }
 
-// => Matched "or" at position 1.
-// => Matched "or" at position 15.
-// => Matched "amet" at position 22.
+// => Matched pattern 0 "or" at position 1.
+// => Matched pattern 0 "or" at position 15.
+// => Matched patterh 1 "amet" at position 22.
 ```
 
 ## Building

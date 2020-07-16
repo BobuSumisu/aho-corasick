@@ -15,18 +15,22 @@ type state struct {
 	dict     int64
 	failLink *state
 	dictLink *state
+	pattern  int64
 }
 
 // TrieBuilder is used to build Tries.
 type TrieBuilder struct {
-	states []*state
-	root   *state
+	states      []*state
+	root        *state
+	numPatterns int64
 }
 
 // NewTrieBuilder creates and initializes a new TrieBuilder.
 func NewTrieBuilder() *TrieBuilder {
 	tb := &TrieBuilder{
-		states: make([]*state, 0),
+		states:      make([]*state, 0),
+		root:        nil,
+		numPatterns: 0,
 	}
 	tb.addState(0, nil)
 	tb.addState(0, nil)
@@ -43,6 +47,7 @@ func (tb *TrieBuilder) addState(value byte, parent *state) *state {
 		dict:     0,
 		failLink: nil,
 		dictLink: nil,
+		pattern:  0,
 	}
 	tb.states = append(tb.states, s)
 	return s
@@ -63,6 +68,9 @@ func (tb *TrieBuilder) AddPattern(pattern []byte) *TrieBuilder {
 	}
 
 	s.dict = int64(len(pattern))
+	s.pattern = tb.numPatterns
+	tb.numPatterns++
+
 	return tb
 }
 
@@ -143,9 +151,11 @@ func (tb *TrieBuilder) Build() *Trie {
 	trans := make([][256]int64, numStates)
 	failLink := make([]int64, numStates)
 	dictLink := make([]int64, numStates)
+	pattern := make([]int64, numStates)
 
 	for i, s := range tb.states {
 		dict[i] = s.dict
+		pattern[i] = s.pattern
 		for c, t := range s.trans {
 			trans[i][c] = t.id
 		}
@@ -157,12 +167,7 @@ func (tb *TrieBuilder) Build() *Trie {
 		}
 	}
 
-	return &Trie{
-		dict:     dict,
-		trans:    trans,
-		failLink: failLink,
-		dictLink: dictLink,
-	}
+	return &Trie{dict, trans, failLink, dictLink, pattern}
 }
 
 func (tb *TrieBuilder) computeFailLinks(s *state) {

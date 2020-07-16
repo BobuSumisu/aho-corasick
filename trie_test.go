@@ -13,9 +13,9 @@ func TestReadme(t *testing.T) {
 	trie := NewTrieBuilder().AddStrings([]string{"or", "amet"}).Build()
 	matches := trie.MatchString("Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
 	expected := []*Match{
-		newMatchString(1, "or"),
-		newMatchString(15, "or"),
-		newMatchString(22, "amet"),
+		newMatchString(1, 0, "or"),
+		newMatchString(15, 0, "or"),
+		newMatchString(22, 1, "amet"),
 	}
 
 	if len(expected) != len(matches) {
@@ -41,13 +41,13 @@ func TestTrie(t *testing.T) {
 			[]string{"a", "ab", "bab", "bc", "bca", "c", "caa"},
 			"abccab",
 			[]*Match{
-				newMatchString(0, "a"),
-				newMatchString(0, "ab"),
-				newMatchString(1, "bc"),
-				newMatchString(2, "c"),
-				newMatchString(3, "c"),
-				newMatchString(4, "a"),
-				newMatchString(4, "ab"),
+				newMatchString(0, 0, "a"),
+				newMatchString(0, 1, "ab"),
+				newMatchString(1, 3, "bc"),
+				newMatchString(2, 5, "c"),
+				newMatchString(3, 5, "c"),
+				newMatchString(4, 0, "a"),
+				newMatchString(4, 1, "ab"),
 			},
 		},
 		{
@@ -55,10 +55,10 @@ func TestTrie(t *testing.T) {
 			[]string{"Aho-Corasick", "Aho-Cora", "Aho", "A"},
 			"Aho-Corasick",
 			[]*Match{
-				newMatchString(0, "A"),
-				newMatchString(0, "Aho"),
-				newMatchString(0, "Aho-Cora"),
-				newMatchString(0, "Aho-Corasick"),
+				newMatchString(0, 3, "A"),
+				newMatchString(0, 2, "Aho"),
+				newMatchString(0, 1, "Aho-Cora"),
+				newMatchString(0, 0, "Aho-Corasick"),
 			},
 		},
 		{
@@ -66,10 +66,10 @@ func TestTrie(t *testing.T) {
 			[]string{"Aho-Corasick", "Corasick", "sick", "k"},
 			"Aho-Corasick",
 			[]*Match{
-				newMatchString(0, "Aho-Corasick"),
-				newMatchString(4, "Corasick"),
-				newMatchString(8, "sick"),
-				newMatchString(11, "k"),
+				newMatchString(0, 0, "Aho-Corasick"),
+				newMatchString(4, 1, "Corasick"),
+				newMatchString(8, 2, "sick"),
+				newMatchString(11, 3, "k"),
 			},
 		},
 		{
@@ -77,10 +77,10 @@ func TestTrie(t *testing.T) {
 			[]string{"Aho-Corasick", "ho-Corasi", "o-Co", "-"},
 			"Aho-Corasick",
 			[]*Match{
-				newMatchString(3, "-"),
-				newMatchString(2, "o-Co"),
-				newMatchString(1, "ho-Corasi"),
-				newMatchString(0, "Aho-Corasick"),
+				newMatchString(3, 3, "-"),
+				newMatchString(2, 2, "o-Co"),
+				newMatchString(1, 1, "ho-Corasi"),
+				newMatchString(0, 0, "Aho-Corasick"),
 			},
 		},
 		{
@@ -88,10 +88,10 @@ func TestTrie(t *testing.T) {
 			[]string{"Aho-Co", "ho-Cora", "o-Coras", "-Corasick"},
 			"Aho-Corasick",
 			[]*Match{
-				newMatchString(0, "Aho-Co"),
-				newMatchString(1, "ho-Cora"),
-				newMatchString(2, "o-Coras"),
-				newMatchString(3, "-Corasick"),
+				newMatchString(0, 0, "Aho-Co"),
+				newMatchString(1, 1, "ho-Cora"),
+				newMatchString(2, 2, "o-Coras"),
+				newMatchString(3, 3, "-Corasick"),
 			},
 		},
 		{
@@ -99,10 +99,10 @@ func TestTrie(t *testing.T) {
 			[]string{"Ah", "o-Co", "ras", "ick"},
 			"Aho-Corasick",
 			[]*Match{
-				newMatchString(0, "Ah"),
-				newMatchString(2, "o-Co"),
-				newMatchString(6, "ras"),
-				newMatchString(9, "ick"),
+				newMatchString(0, 0, "Ah"),
+				newMatchString(2, 1, "o-Co"),
+				newMatchString(6, 2, "ras"),
+				newMatchString(9, 3, "ick"),
 			},
 		},
 		{
@@ -110,8 +110,8 @@ func TestTrie(t *testing.T) {
 			[]string{"o"},
 			"Aho-Corasick",
 			[]*Match{
-				newMatchString(2, "o"),
-				newMatchString(5, "o"),
+				newMatchString(2, 0, "o"),
+				newMatchString(5, 0, "o"),
 			},
 		},
 		{
@@ -125,10 +125,10 @@ func TestTrie(t *testing.T) {
 			[]string{"\x00\x00"},
 			"\x00\x00Aho\x00\x00-\x00\x00Corasick\x00\x00",
 			[]*Match{
-				newMatchString(0, "\x00\x00"),
-				newMatchString(5, "\x00\x00"),
-				newMatchString(8, "\x00\x00"),
-				newMatchString(18, "\x00\x00"),
+				newMatchString(0, 0, "\x00\x00"),
+				newMatchString(5, 0, "\x00\x00"),
+				newMatchString(8, 0, "\x00\x00"),
+				newMatchString(18, 0, "\x00\x00"),
 			},
 		},
 		{
@@ -136,10 +136,10 @@ func TestTrie(t *testing.T) {
 			[]string{"\xff\xff"},
 			"\xff\xffAho\xfe\xfe-\xff\xffCorasick\xff\xff\xff",
 			[]*Match{
-				newMatchString(0, "\xff\xff"),
-				newMatchString(8, "\xff\xff"),
-				newMatchString(18, "\xff\xff"),
-				newMatchString(19, "\xff\xff"),
+				newMatchString(0, 0, "\xff\xff"),
+				newMatchString(8, 0, "\xff\xff"),
+				newMatchString(18, 0, "\xff\xff"),
+				newMatchString(19, 0, "\xff\xff"),
 			},
 		},
 	}
@@ -155,7 +155,7 @@ func TestTrie(t *testing.T) {
 
 		for i := range matches {
 			if !MatchEqual(matches[i], c.expected[i]) {
-				t.Errorf("%s: expected %v, got %v", c.name, matches[i], c.expected[i])
+				t.Errorf("%s: expected %v, got %v", c.name, c.expected[i], matches[i])
 			}
 		}
 	}
@@ -168,7 +168,7 @@ func TestMatchFirst(t *testing.T) {
 	}
 	tr := NewTrieBuilder().AddString("Hedvig").Build()
 	match := tr.MatchFirst(ibsen)
-	expected := newMatchString(937, "Hedvig")
+	expected := newMatchString(937, 0, "Hedvig")
 	if !MatchEqual(expected, match) {
 		t.Errorf("expected %v, got %v\n", expected, match)
 	}

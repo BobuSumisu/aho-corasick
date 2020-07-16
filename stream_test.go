@@ -10,9 +10,9 @@ import (
 func testTrie(trie *Trie) error {
 	matches := trie.MatchString("Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
 	expected := []*Match{
-		newMatchString(1, "or"),
-		newMatchString(15, "or"),
-		newMatchString(22, "amet"),
+		newMatchString(1, 0, "or"),
+		newMatchString(15, 0, "or"),
+		newMatchString(22, 1, "amet"),
 	}
 
 	if len(expected) != len(matches) {

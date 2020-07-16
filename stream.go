@@ -49,6 +49,10 @@ func (enc *encoder) encode(trie *Trie) error {
 		return err
 	}
 
+	if err := binary.Write(w, binary.LittleEndian, uint64(len(trie.pattern))); err != nil {
+		return err
+	}
+
 	if err := binary.Write(w, binary.LittleEndian, trie.dict); err != nil {
 		return err
 	}
@@ -62,6 +66,10 @@ func (enc *encoder) encode(trie *Trie) error {
 	}
 
 	if err := binary.Write(w, binary.LittleEndian, trie.dictLink); err != nil {
+		return err
+	}
+
+	if err := binary.Write(w, binary.LittleEndian, trie.pattern); err != nil {
 		return err
 	}
 
@@ -85,7 +93,7 @@ func (dec *decoder) decode() (*Trie, error) {
 		return nil, err
 	}
 
-	var dictLen, transLen, dictLinkLen, failLinkLen uint64
+	var dictLen, transLen, dictLinkLen, failLinkLen, patternLen uint64
 
 	if err := binary.Read(r, binary.LittleEndian, &dictLen); err != nil {
 		return nil, err
@@ -100,6 +108,10 @@ func (dec *decoder) decode() (*Trie, error) {
 	}
 
 	if err := binary.Read(r, binary.LittleEndian, &failLinkLen); err != nil {
+		return nil, err
+	}
+
+	if err := binary.Read(r, binary.LittleEndian, &patternLen); err != nil {
 		return nil, err
 	}
 
@@ -123,6 +135,10 @@ func (dec *decoder) decode() (*Trie, error) {
 		return nil, err
 	}
 
-	trie := Trie{dict, trans, failLink, dictLink}
-	return &trie, nil
+	pattern := make([]int64, patternLen)
+	if err := binary.Read(r, binary.LittleEndian, pattern); err != nil {
+		return nil, err
+	}
+
+	return &Trie{dict, trans, failLink, dictLink, pattern}, nil
 }

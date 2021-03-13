@@ -1,3 +1,1 @@
-module github.com/BobuSumisu/aho-corasick
-
-go 1.14
+module github.com/zeewell/aho-corasick

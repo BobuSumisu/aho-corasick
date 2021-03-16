@@ -74,7 +74,7 @@ func (tr *Trie) MatchFirst(input []byte) *Match {
 	var match *Match
 	tr.Walk(input, func(end, n, pattern int64) bool {
 		pos := end - n + 1
-		match = &Match{pos: pos, match: input[pos : pos+n]}
+		match = newMatch(pos, pattern, input[pos:pos+n])
 		return false
 	})
 	return match

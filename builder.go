@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"os"
 	"strings"
+	"sync"
 )
 
 // state represents a node in the Aho-Corasick trie during construction.
@@ -175,6 +176,12 @@ func (tb *TrieBuilder) Build() *Trie {
 		dictLink:  make([]uint32, numStates),
 		dict:      make([]uint32, numStates),
 		pattern:   make([]uint32, numStates),
+		matchPool: sync.Pool{
+			New: func() any { return &[]*Match{} },
+		},
+		matchStructPool: sync.Pool{
+			New: func() any { return new(Match) },
+		},
 	}
 
 	// Convert the state graph into arrays.

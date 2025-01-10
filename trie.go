@@ -73,12 +73,6 @@ func (tr *Trie) Match(input []byte) []*Match {
 	result := make([]*Match, len(*matches))
 	copy(result, *matches)
 
-	// Return matches to pool
-	for i := range *matches {
-		(*matches)[i] = nil
-	}
-	tr.matchPool.Put(matches)
-
 	return result
 }
 

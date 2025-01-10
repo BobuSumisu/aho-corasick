@@ -228,22 +228,26 @@ func BenchmarkMatchIbsen(b *testing.B) {
 
 	b.Run("100", func(b *testing.B) {
 		for n := 0; n < b.N; n++ {
-			trie.Match(ibsen[:100])
+			matches := trie.Match(ibsen[:100])
+			trie.ReleaseMatches(matches)
 		}
 	})
 	b.Run("1000", func(b *testing.B) {
 		for n := 0; n < b.N; n++ {
-			trie.Match(ibsen[:1000])
+			matches := trie.Match(ibsen[:1000])
+			trie.ReleaseMatches(matches)
 		}
 	})
 	b.Run("10000", func(b *testing.B) {
 		for n := 0; n < b.N; n++ {
-			trie.Match(ibsen[:10000])
+			matches := trie.Match(ibsen[:10000])
+			trie.ReleaseMatches(matches)
 		}
 	})
 	b.Run("100000", func(b *testing.B) {
 		for n := 0; n < b.N; n++ {
-			trie.Match(ibsen[:100000])
+			matches := trie.Match(ibsen[:100000])
+			trie.ReleaseMatches(matches)
 		}
 	})
 }

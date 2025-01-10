@@ -102,3 +102,12 @@ func (tr *Trie) MatchString(input string) []*Match {
 func (tr *Trie) MatchFirstString(input string) *Match {
 	return tr.MatchFirst([]byte(input))
 }
+
+// New method to return slice to pool
+func (tr *Trie) ReleaseMatches(matches []*Match) {
+	matchesPtr := &matches
+	for _, m := range *matchesPtr {
+		tr.matchStructPool.Put(m)
+	}
+	tr.matchPool.Put(matchesPtr)
+}

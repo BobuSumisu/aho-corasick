@@ -1,5 +1,9 @@
 package ahocorasick
 
+import (
+	"sync"
+)
+
 const (
 	rootState uint32 = 1
 	nilState  uint32 = 0
@@ -12,6 +16,9 @@ type Trie struct {
 	dict     []uint32
 	pattern  []uint32
 	dictLink []uint32
+
+	matchPool       sync.Pool // Pool for match slice pointers
+	matchStructPool sync.Pool // Pool for Match structs
 }
 
 // Walk calls this function on any match, giving the end position, length of the matched bytes,
@@ -50,13 +57,29 @@ func (tr *Trie) Walk(input []byte, fn WalkFn) {
 
 // Match runs the Aho-Corasick string-search algorithm on a byte input.
 func (tr *Trie) Match(input []byte) []*Match {
-	matches := make([]*Match, 0)
+	matches := tr.matchPool.Get().(*[]*Match)
+	*matches = (*matches)[:0] // Reset slice while keeping capacity
+
 	tr.Walk(input, func(end, n, pattern uint32) bool {
 		pos := end - n + 1
-		matches = append(matches, newMatch(pos, pattern, input[pos:pos+n]))
+		match := tr.matchStructPool.Get().(*Match)
+		match.pos = pos
+		match.pattern = pattern
+		match.match = input[pos : pos+n]
+		*matches = append(*matches, match)
 		return true
 	})
-	return matches
+
+	result := make([]*Match, len(*matches))
+	copy(result, *matches)
+
+	// Return matches to pool
+	for i := range *matches {
+		(*matches)[i] = nil
+	}
+	tr.matchPool.Put(matches)
+
+	return result
 }
 
 // MatchFirst is the same as Match, but returns after first successful match.
